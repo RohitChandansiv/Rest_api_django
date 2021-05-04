@@ -1,11 +1,40 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-
+from django.shortcuts import render
+from django.http import HttpResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Post
 from .forms import PostForm
+from .serializers import PostSerializer
 
 
 # Create your views here.
+
+def home(request):
+    tmpl_vars = {'form': PostForm()}
+    return render(request, 'blog/index.html', tmpl_vars)
+
+
+@api_view(['GET'])
+def post_collection(request):
+    if request.method == 'GET':
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+def post_element(request, pk):
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
+
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
