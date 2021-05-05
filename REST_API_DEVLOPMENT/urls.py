@@ -16,13 +16,8 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
-from blog import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('blog', include('blog.urls')),
+    path('blog/', include('blog.urls')),
     path('', include('api_basic.urls')),
-    url(r'^$', views.home, name='home'),
-    # api
-    url(r'^api/v1/posts/$', views.post_collection, name='post_collection'),
-    url(r'^api/v1/posts/(?P<pk>[0-9]+)$', views.post_element, 'post_element')
 ]
